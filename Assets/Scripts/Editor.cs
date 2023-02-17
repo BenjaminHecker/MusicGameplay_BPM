@@ -18,7 +18,7 @@ public class Editor : MonoBehaviour
 
     private SpriteRenderer sRender;
 
-    private List<GameObject> placedObjects = new List<GameObject>();
+    private Dictionary<Vector3, GameObject> placedObjects = new Dictionary<Vector3, GameObject>();
     private List<Shooter> shooters = new List<Shooter>();
 
     private bool runGame = false;
@@ -40,6 +40,8 @@ public class Editor : MonoBehaviour
 
         if (Input.GetMouseButtonUp(0))
             PlaceItem();
+        if (Input.GetMouseButtonUp(1))
+            RemoveItem();
 
         if (Input.GetKeyUp(KeyCode.Space))
         {
@@ -58,8 +60,8 @@ public class Editor : MonoBehaviour
             foreach (Shooter s in shooters)
                 s.DestroyNote();
 
-            foreach (GameObject go in placedObjects)
-                Destroy(go);
+            foreach (var po in placedObjects)
+                Destroy(po.Value);
 
             placedObjects.Clear();
             shooters.Clear();
@@ -86,14 +88,40 @@ public class Editor : MonoBehaviour
         sRender.sprite = GetSelectedItem().sprite;
     }
 
-    private void PlaceItem()
+    private void RemoveItem()
+    {
+        Vector3 gridPos = Vector3Int.FloorToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition)) + Vector3.one * 0.5f;
+        gridPos.z = 0;
+
+        foreach (var po in placedObjects)
+        {
+            if ((po.Value.transform.position - gridPos).magnitude <= 0.1f)
+            {
+                foreach (Shooter s in shooters)
+                {
+                    if (s.gameObject == po.Value)
+                    {
+                        shooters.Remove(s);
+                        break;
+                    }
+                }
+
+                Destroy(po.Value);
+                placedObjects.Remove(po.Key);
+                break;
+            }
+        }
+    }
+
+        private void PlaceItem()
     {
         Vector3 gridPos = Vector3Int.FloorToInt(Camera.main.ScreenToWorldPoint(Input.mousePosition)) + Vector3.one * 0.5f;
         gridPos.z = 0;
 
         GameObject go = Instantiate(GetSelectedItem().prefab, gridPos, transform.rotation);
 
-        placedObjects.Add(go);
+        RemoveItem();
+        placedObjects[gridPos] = go;
         if (GetSelectedItem().selectKey == KeyCode.Alpha1)
             shooters.Add(go.GetComponent<Shooter>());
     }
