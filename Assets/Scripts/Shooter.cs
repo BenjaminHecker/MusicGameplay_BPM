@@ -7,14 +7,17 @@ public class Shooter : MonoBehaviour
 {
     [SerializeField] private GameObject notePrefab;
 
-    private void Awake()
+    private Note note;
+
+    public void DestroyNote()
     {
-        ShootNote();
+        if (note != null)
+            Destroy(note.gameObject);
     }
     
     public void ShootNote()
     {
-        GameObject note = Instantiate(notePrefab, transform.position, Quaternion.identity);
-        note.GetComponent<Note>().Setup(this, Vector3Int.RoundToInt(transform.right));
+        note = Instantiate(notePrefab, transform.position, Quaternion.identity).GetComponent<Note>();
+        note.Setup(this, Vector3Int.RoundToInt(transform.right));
     }
 }

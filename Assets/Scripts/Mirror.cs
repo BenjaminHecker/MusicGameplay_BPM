@@ -13,6 +13,8 @@ public class Mirror : NoteInteractor
     private void Awake()
     {
         sRender = GetComponent<SpriteRenderer>();
+        sRender.flipX = Mathf.RoundToInt(transform.localEulerAngles.z / 90f) % 2 == 1;
+        transform.rotation = Quaternion.identity;
         SetKeyText();
     }
 
