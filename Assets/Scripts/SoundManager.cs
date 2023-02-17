@@ -31,12 +31,7 @@ public class SoundManager : MonoBehaviour
     public static void Play(Note.Keys key)
     {
         foreach (Sound s in instance.sounds)
-        {
             if (s.key == key)
-            {
-                instance.source.clip = s.clip;
-                instance.source.Play();
-            }
-        }
+                instance.source.PlayOneShot(s.clip);
     }
 }
