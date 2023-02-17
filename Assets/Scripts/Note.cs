@@ -16,7 +16,7 @@ public class Note : MonoBehaviour
     private bool trigger = false;
     private IEnumerator moveRoutine;
 
-    [HideInInspector] public Vector3 direction = Vector3.zero;
+    [HideInInspector] public Vector3Int direction = Vector3Int.zero;
     private Vector3 targetPos = Vector3.zero;
 
     #region Delegate
@@ -45,7 +45,7 @@ public class Note : MonoBehaviour
 
     #endregion
 
-    public void Setup(Shooter origin, Vector3 direction)
+    public void Setup(Shooter origin, Vector3Int direction)
     {
         this.origin = origin;
         this.direction = direction;
@@ -86,15 +86,13 @@ public class Note : MonoBehaviour
 
         transform.position = targetPos;
         Interact();
-
-        Debug.Log("Finish");
     }
 
     private void Interact()
     {
         if (interactor == null) return;
 
-        if ((transform.position - interactor.transform.position).magnitude <= 0.1f)
+        if ((transform.position - interactor.transform.position).magnitude <= 0.2f)
             interactor.Interact(this);
     }
 
