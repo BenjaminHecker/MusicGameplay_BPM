@@ -98,4 +98,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tickValue: 96
-  moveSpeed: 0.5
+  moveTime: 0.2

@@ -7,10 +7,11 @@ public class Note : MonoBehaviour
 {
     [SerializeField] private Beat.TickValue tickValue;
 
-    [SerializeField] private float moveTime = 0.5f;
+    [SerializeField] [Range(0f, 1f)] private float moveTime = 0.5f;
 
     private Clock clock;
     private bool trigger = false;
+    private IEnumerator moveRoutine;
 
     private Vector3 direction = Vector3.zero;
     private Vector3 targetPos = Vector3.zero;
@@ -58,19 +59,25 @@ public class Note : MonoBehaviour
         trigger = false;
         targetPos += direction;
 
-        StartCoroutine(SmoothMove());
+        if (moveRoutine != null)
+            StopCoroutine(moveRoutine);
+        moveRoutine = SmoothMove();
+        StartCoroutine(moveRoutine);
     }
 
     private IEnumerator SmoothMove()
     {
         Vector3 prevPos = transform.position;
-        float timer = 0f;
+        float timer = Time.deltaTime;
+        float timerTotal = moveTime / (float) clock.BPM * 60f;
+
+        yield return new WaitForSeconds((1 - moveTime) / (float) clock.BPM * 60f);
 
         while (timer < moveTime)
         {
-            timer += Time.deltaTime;
-            transform.position = Vector3.Lerp(prevPos, targetPos, timer / moveTime);
+            transform.position = Vector3.Lerp(prevPos, targetPos, timer / timerTotal);
             yield return new WaitForEndOfFrame();
+            timer += Time.deltaTime;
         }
 
         transform.position = targetPos;
