@@ -18,6 +18,7 @@ public class Editor : MonoBehaviour
 
     private SpriteRenderer sRender;
 
+    private List<GameObject> placedObjects = new List<GameObject>();
     private List<Shooter> shooters = new List<Shooter>();
 
     private bool runGame = false;
@@ -51,6 +52,20 @@ public class Editor : MonoBehaviour
                 foreach (Shooter s in shooters)
                     s.DestroyNote();
         }
+
+        if (Input.GetKeyUp(KeyCode.Return))
+        {
+            foreach (Shooter s in shooters)
+                s.DestroyNote();
+
+            foreach (GameObject go in placedObjects)
+                Destroy(go);
+
+            placedObjects.Clear();
+            shooters.Clear();
+
+            runGame = false;
+        }
     }
 
     private EditorItem GetSelectedItem()
@@ -78,6 +93,7 @@ public class Editor : MonoBehaviour
 
         GameObject go = Instantiate(GetSelectedItem().prefab, gridPos, transform.rotation);
 
+        placedObjects.Add(go);
         if (GetSelectedItem().selectKey == KeyCode.Alpha1)
             shooters.Add(go.GetComponent<Shooter>());
     }
