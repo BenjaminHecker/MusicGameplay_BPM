@@ -7,13 +7,16 @@ public class Note : MonoBehaviour
 {
     [SerializeField] private Beat.TickValue tickValue;
 
-    [SerializeField] [Range(0f, 1f)] private float moveTime = 0.5f;
+    [SerializeField] [Range(0f, 1f)] private float moveFactor = 0.5f;
+
+    [HideInInspector] public NoteInteractor interactor;
+    [HideInInspector] public Shooter origin;
 
     private Clock clock;
     private bool trigger = false;
     private IEnumerator moveRoutine;
 
-    private Vector3 direction = Vector3.zero;
+    [HideInInspector] public Vector3 direction = Vector3.zero;
     private Vector3 targetPos = Vector3.zero;
 
     #region Delegate
@@ -42,8 +45,9 @@ public class Note : MonoBehaviour
 
     #endregion
 
-    public void Setup(Vector3 direction)
+    public void Setup(Shooter origin, Vector3 direction)
     {
+        this.origin = origin;
         this.direction = direction;
         targetPos = transform.position;
     }
@@ -69,11 +73,11 @@ public class Note : MonoBehaviour
     {
         Vector3 prevPos = transform.position;
         float timer = Time.deltaTime;
-        float timerTotal = moveTime / (float) clock.BPM * 60f;
+        float timerTotal = moveFactor / (float) clock.BPM * 60f;
 
-        yield return new WaitForSeconds((1 - moveTime) / (float) clock.BPM * 60f);
+        yield return new WaitForSeconds((1 - moveFactor) / (float)clock.BPM * 60f);
 
-        while (timer < moveTime)
+        while (timer + Time.deltaTime < timerTotal)
         {
             transform.position = Vector3.Lerp(prevPos, targetPos, timer / timerTotal);
             yield return new WaitForEndOfFrame();
@@ -81,6 +85,17 @@ public class Note : MonoBehaviour
         }
 
         transform.position = targetPos;
+        Interact();
+
+        Debug.Log("Finish");
+    }
+
+    private void Interact()
+    {
+        if (interactor == null) return;
+
+        if ((transform.position - interactor.transform.position).magnitude <= 0.1f)
+            interactor.Interact(this);
     }
 
     private void Update()
@@ -88,6 +103,14 @@ public class Note : MonoBehaviour
         if (trigger)
         {
             Move();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Note Interactor"))
+        {
+            interactor = collision.GetComponent<NoteInteractor>();
         }
     }
 }

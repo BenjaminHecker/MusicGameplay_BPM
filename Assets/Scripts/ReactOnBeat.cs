@@ -47,7 +47,6 @@ public class ReactOnBeat : MonoBehaviour
 
     void ReactAction()
     {
-        Debug.Log("Hey!!");
         pleaseChange = true;
     }
 

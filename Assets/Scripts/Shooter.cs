@@ -12,9 +12,9 @@ public class Shooter : MonoBehaviour
         Invoke("ShootNote", 1f);
     }
     
-    void ShootNote()
+    public void ShootNote()
     {
         GameObject note = Instantiate(notePrefab, transform.position, Quaternion.identity);
-        note.GetComponent<Note>().Setup(transform.right);
+        note.GetComponent<Note>().Setup(this, transform.right);
     }
 }
