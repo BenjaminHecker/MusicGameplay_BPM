@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Mirror : NoteInteractor
 {
+    [SerializeField] private Note.Keys key;
+
     private SpriteRenderer sRender;
 
     private void Awake()
@@ -13,6 +15,8 @@ public class Mirror : NoteInteractor
 
     public override void Interact(Note note)
     {
+        SoundManager.Play(key);
+
         if (sRender.flipX)
         {
             if (note.direction == Vector3Int.right) note.direction = Vector3Int.down;

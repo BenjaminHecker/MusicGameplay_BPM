@@ -5,6 +5,8 @@ using Beat;
 
 public class Note : MonoBehaviour
 {
+    public enum Keys { C, D, E, F, G, A, B }
+
     [SerializeField] private Beat.TickValue tickValue;
 
     [SerializeField] [Range(0f, 1f)] private float moveFactor = 0.5f;
@@ -49,7 +51,9 @@ public class Note : MonoBehaviour
     {
         this.origin = origin;
         this.direction = direction;
+
         targetPos = transform.position;
+        Move();
     }
 
 
@@ -60,11 +64,15 @@ public class Note : MonoBehaviour
 
     void Move()
     {
+        if (moveRoutine != null)
+            StopCoroutine(moveRoutine);
+
+        transform.position = targetPos;
+        Interact();
+
         trigger = false;
         targetPos += direction;
 
-        if (moveRoutine != null)
-            StopCoroutine(moveRoutine);
         moveRoutine = SmoothMove();
         StartCoroutine(moveRoutine);
     }
@@ -77,7 +85,7 @@ public class Note : MonoBehaviour
 
         yield return new WaitForSeconds((1 - moveFactor) / (float)clock.BPM * 60f);
 
-        while (timer + Time.deltaTime < timerTotal)
+        while (timer < timerTotal)
         {
             transform.position = Vector3.Lerp(prevPos, targetPos, timer / timerTotal);
             yield return new WaitForEndOfFrame();
@@ -85,7 +93,6 @@ public class Note : MonoBehaviour
         }
 
         transform.position = targetPos;
-        Interact();
     }
 
     private void Interact()

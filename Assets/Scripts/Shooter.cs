@@ -9,7 +9,7 @@ public class Shooter : MonoBehaviour
 
     private void Awake()
     {
-        Invoke("ShootNote", 1f);
+        ShootNote();
     }
     
     public void ShootNote()
